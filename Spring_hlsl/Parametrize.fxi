@@ -1,0 +1,14 @@
+// Vary these to change the effect's outcome
+// Grouped here for fast access
+
+const float k=1200.0f;
+const float l=6.0f;
+const float k_equil=0;
+
+const float scale_factor=1.2f;
+const float magn_factor=8.0f;
+const float minimum_allowed_point_distance=0.5f;
+
+const float obb_width=0.55*0.00275;
+
+const float time_step=0.017/16; 

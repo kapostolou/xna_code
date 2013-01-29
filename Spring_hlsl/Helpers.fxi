@@ -1,0 +1,26 @@
+// These helper functions transform between the right handed coordinate system of the normalized coordinates
+//and the texture adressing coordinates of directx
+
+float2 UV_vector_to_Clip_Vector(float2 UV_v)
+{
+ return float2(2*UV_v.x,-2*UV_v.y);
+}
+
+
+float2 UV_Point_to_Clip_Point(float2 UV_v)
+{
+ return float2(2*(UV_v.x-0.5),-2*(UV_v.y-0.5));
+}
+
+
+
+float2 Clip_Vector_To_UV_vector(float4 clip_v)
+{
+
+ return float2(0.5*clip_v.x,-0.5*clip_v.y);
+}
+float2 Clip_Point_To_UV_Point(float4 clip_v)
+{
+ 
+ return float2(0.5*clip_v.x,-0.5*clip_v.y)+float2(0.5,0.5);
+}
