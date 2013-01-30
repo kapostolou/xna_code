@@ -1,4 +1,4 @@
-This classes are all to be changed and not directed related to how the effect works, so I don't see why I'd document them in detail
+These classes are all to be changed and not directed related to how the effect works, so I don't see why I'd document them in detail
 
 The Draw_Froces is just a place to initialize a vertexbuffer and an indexbuffer for creating a "model" of the shape of the force placed on the grid. Normally this would be done via loading and possibly pre processing a file from some 3d modelling program,
 however I so far only use meshes created manually.
