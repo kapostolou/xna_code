@@ -1,1 +1,1 @@
-The hlsl files used. See the chart in the root directory for their description.
+The hlsl files used. See the chart in the Diagrams/GPU directory for their description.
