@@ -6,7 +6,7 @@
 //Currently all the shapes are just unrotated quads but I'll try to see what it'll look like with different shapes.
 
 //Unlike in the other hlsl effects used in running the GPU spring simulation
-//here the quads will be placed on specific areas of the surface (not with a full screen quad sending texel adresses to pixel shaders)
+//here the quads will be placed on specific areas of the surface (not with a full screen quad sending texel addresses to pixel shaders)
 
 //They'll also be drawn with an additive blend on an hdrblendable surface (added that is)
 
@@ -18,7 +18,7 @@
 //to contain scaling and rotation matrices and do the calculation fully in the GPU (and support general shapes instead of unrotated quads)
 
 // parameters
-// force_center: is a normalized coordinates point where the "center" the force is supposed be emmited from
+// force_center: is a normalized coordinates point where the "center" the force is supposed be emitted from
 // it depends on the type of calculation whether it is needed or not
 
 // direction: shows the way the object that placed the force was moving (currently unused)
@@ -28,7 +28,7 @@
 
 #include "Parametrize.fxi"
 //****Constants taken from Parametrize.fxi
-//***        const float scale_factor;                        //modifies tha area affected
+//***        const float scale_factor;                        //modifies the area affected
 //***        const float magn_factor;                         //modifies the forces magnitude
 //***        const float minimum_allowed_point_distance;      //threshold for how small a distance can be in an inverse square calculation
 
@@ -53,7 +53,7 @@ float  force_strength:TEXCOORD3;
 VS_Out Draw_Force_VS(VS_In input)
 {
 	VS_Out Output;
-	//it is up to the pixel shader wether to use these arguments or not
+	//It is up to the pixel shader whether to use these arguments or not
 	Output.force_center=input.force_center;
 	Output.direction=input.direction;
 	Output.force_strength=input.force_strength;
@@ -74,14 +74,14 @@ VS_Out Draw_Force_VS(VS_In input)
 float4 Draw_Force_PS (VS_Out input) : COLOR0
 {
   
-  //vector from where the force is supposed to be emmited from to the texel the ps is working 
+  //Vector from where the force is supposed to be emitted from to the texel the ps is working 
   float2 direction_towards_the_emission=-normalize(input.Position_Copy.xy-input.force_center);
   
-  //the length ot the previous vector, it can be maxed by a threshold, clamping this to a small value
+  //The length ot the previous vector, it can be maxed by a threshold, clamping this to a small value
   //boosts the applied forces due to the division by the square length_*length_
   float length_=max(length(input.Position_Copy.xy-input.force_center),minimum_allowed_point_distance);
   
-  //something vaguely similar to the gravitation force, the *14 coefficient is a remnant from back when the effect worked differently
+  //Something vaguely similar to the gravitation force, the *14 coefficient is a remnant from back when the effect worked differently
   //and the scale of the forces was greater
   return float4 (magn_factor*14*input.force_strength*direction_towards_the_emission/(length_*length_),0,1);
   

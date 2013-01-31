@@ -1,5 +1,5 @@
-// These helper functions transform between the right handed coordinate system of the normalized coordinates
-//and the texture adressing coordinates of directx
+//These helper functions transform between the coordinate system of the normalized coordinates
+//and the texture addressing coordinates of directx
 
 float2 UV_vector_to_Clip_Vector(float2 UV_v)
 {

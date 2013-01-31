@@ -12,12 +12,11 @@ Circled arrows a run time call from the game code
 
 
 
-The unnamed ellipse  represents a dynamic array and it and the type of its elements (Force_Draw_Handle) commands for placing forces on the grid.
+The unnamed ellipse  represents a dynamic array. and the type of its elements (Force_Draw_Handle) represents commands for placing forces on the grid.
 
 
 
-Essentialy the game play code should just add to this list Force_Draw_Handles containing information on what we'd like to place.
-
+Essentially the game play code should add to this list Force_Draw_Handle objects containing information on what we'd like to place on the grid.
 
 
 
@@ -40,7 +39,7 @@ The Force_Draw_Handle is a request for placing forces
 
 
 
-The Spring_Grid_Force_Placement manager gathers requests for the placement of forces on the grid (Force_Draw_handles). 
+The Spring_Grid_Force_Placement manager gathers requests for the placement of forces on the grid (Force_Draw_Handles). 
 
 
 
@@ -60,5 +59,7 @@ Also the Force_Quad_Instances_Manager is essentially just an alias for the gener
 
 
 
-So broadly speaking the Spring_Effect guides the draw calls and the use of vertex buffers etc. And the game code is supposed to communicate (place forces) with the Spring_Grid_Force_Placement.
+
+So broadly speaking the Spring_Effect guides the draw calls and the use of vertex buffers etc. And the game code is supposed to communicate (place forces) with a Spring_Grid_Force_Placement object.
+
 The other classes support those operations.

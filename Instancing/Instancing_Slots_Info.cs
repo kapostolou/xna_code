@@ -17,14 +17,14 @@ namespace GELib
     /// <summary>
     /// Used by the Generic Instancing template to configure what each of its slots will contain.
     /// 
-    /// This classes isn't supposed to be used directly by subclassed, with the suclass constructir filling up all the data members.
+    /// This class isn't supposed to be used directly but subclassed, with the subclass constructor filling up all the data members.
     /// </summary>
     public class Instancing_Slots_Info
     {
-        //how many slots to use
+        //How many slots to use
         public int Number_Of_Slots;
         
-        //a "model" for each slot (see the MY_Model class's comments)
+        //A "model" for each slot (see the MY_Model class's comments)
         public MY_Model[] slots;
 
         public Instancing_Slots_Info(int total)
@@ -40,7 +40,7 @@ namespace GELib
         public Force_Draw_Info()
             : base(1)
         {
-            //just one slot and the model class Force_By_A_Bullet really just uses a quad
+            //Just one slot (and the model class Force_By_A_Bullet really just uses a quad)
             this.slots[0] = new Model_Types.Force.Force_By_A_Bullet();
             
 

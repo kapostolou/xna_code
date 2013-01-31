@@ -12,10 +12,13 @@ using Microsoft.Xna.Framework.Media;
 
 namespace GELib
 {
+	//Currently only the Position0 data are used (and those only in scaling an unrotated quad), ignore the other field
+	//This format is used in creating the vertexbuffer of the mesh (really just a quad) of the "force shape" being placed on top of the grid
     public struct Draw_Forces_Vertex_Format
     {
         public Vector3 position_screen_corner_in_clip;
-        //public Color color;
+       
+	    //UNUSED
         public Vector2 Force;
 
 

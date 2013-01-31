@@ -17,32 +17,31 @@ namespace GELib
     {
         GraphicsDevice device;
 
-        //number of mass points in the grid's x direction
+        //Number of mass points in the grid's x direction
         const int sizex = 128;
-        //number of mass points in the grid's y direction
+        //Number of mass points in the grid's y direction
         const int sizey = 128;
         const int number_of_inner_grid_points = (sizex - 1) * (sizey - 1);
 
 
 
-        //const int style_of_effect = 0;
-
-        //how many times per frame the spring simulation should run
+        
+        //How many times per frame the spring simulation should run
         const int steps_per_frame = 16;
 
+		
         //A helper class configured to perform some calculations used in setting up
         //the vertices of the vertexbuffers used in this post process effect
         Help.GPU_Vertex_Helper helper;
 
-        //this is where the game adds "handles" that generate instanced quads containing forces placed on the grid.
-        //This class's code contains a reference to order the drawing of all those forces
+        //This is where the game adds "handles" that generate instanced quads containing forces placed on the grid.
         Spring_Grid_Force_Placement_Manager force_placement_manager;
         
       
 
        
         # region debug
-        //Used in retreiving the GPU contents for debugging
+        //Used in retrieving the GPU contents for debugging
         Vector4[] debug_Positions;
         Vector4[] debug_Velocities;
         Vector4[] debug_Forces;
@@ -50,7 +49,7 @@ namespace GELib
 
         #region buffers
 
-        //The XNA vertex buffer containing the quad-per-spring that will eventually get drawn as a graphical effect
+        //The XNA vertex buffer containing the quad that will be transformed and drawn as the graphical depiction of a each "spring"
         VertexBuffer draw_lines_buffer;
         
         //The XNA vertex buffer that contains the screen wide quad that passes the "indexes"(a texture coordinate) of the point masses to pixel shaders
@@ -69,42 +68,37 @@ namespace GELib
         #region effects
 
         
-        //This effect performs the point mass positions
+        //This effect performs the point mass positions integration
         Effect Update_Position_effect;
-        //This effect performs the point mass velocities
+        //This effect performs the point mass velocities integration
         Effect Update_Velocity_effect;
         //Calculates the hooke spring forces
         Effect Hooke_Force_effect;
-        //Gathers forces placed geometrically to mass points by comparing the point's position to the area the force covers
+        //Gathers forces placed geometrically on the grid, to mass points, by comparing the point's position to the area the force covers
         Effect Gather_Forces_to_indices;
-        //the effect that draws the spring grid
+        //The effect that draws the spring grid
         Effect Draw_the_Grid_effect;
         
         
-        //Effect draw_3d;
-        //Help.Graphics.Blur_Effect blur;
-
-
+        
         #endregion
         #region Surfaces
 
-        // The original positions of the point masses
-        // can be used in the force calculations to add some force to send each point to its original position
+        // The original positions of the point masses, can be used in the force calculations to add some force to send each point to its original position
         RenderTarget2D Initial_Position;
         
-        //the mass point positions of the previous frame
-        // in this and most of the other surfaces
-        //each texel in the surface is supposed to correspond to a mass point in the grid (as ordered by their equilibrium positions)
+        //The mass point positions of the previous frame
+		//In this and most of the other surfaces, each texel in the surface is supposed to correspond to a mass point in the grid (as ordered by their equilibrium positions)
         //that is the texels correspond to "grid array indices" (of mass points) with the values in the texel giving the geometrical coordinates of that index
         RenderTarget2D Position0;
 
-        //where this frame's positions will be calculated and then written
+        //Where this frame's positions will be calculated and then written
         RenderTarget2D Position1;
 
-        //the velocities of the previous frame
+        //The velocities of the previous frame
         RenderTarget2D Velocity0;
 
-        //where this frame's velocities will be calculated
+        //Where this frame's velocities will be calculated
         RenderTarget2D Velocity1;
         
         //The force that each mass point will be influenced by during this frame
@@ -114,11 +108,10 @@ namespace GELib
         //by reading each index's current position and then reading what's stored in the forces by position accumulator
         RenderTarget2D Force_By_Index;
         
-        //this is the surface where the "force-quads" (or even other models than quads) get placed
+        //This is the surface where the "force-quads" (or even other models than quads) get placed
         public RenderTarget2D Force_By_Position_Accumulator;
         
-        //the final generated image, passed for rendering the rest of the game
-        RenderTarget2D Draw_Lines_Here;
+        
 
 
         # endregion
@@ -131,6 +124,7 @@ namespace GELib
             __draw_lines_buffer = new Spring_Drawing_Vertex_Format[4 * 4 * number_of_inner_grid_points];
             
             //Prepare the vertexbuffer that gives indices (by using the uv coords) to texels, the index acting as an identifier for a point mass
+			//See the GPU_Vertex_Helper class for a description of the helper methods
             __full_screen_with_index_info_buffer = new Spring_Processing_Vertex_Format[4];
             __full_screen_with_index_info_buffer[0] = new Spring_Processing_Vertex_Format(helper.Clip_Coords_of_point_UL(1, 1), helper.TX_Coords_of_point_Center(1, 1));
             __full_screen_with_index_info_buffer[1] = new Spring_Processing_Vertex_Format(helper.Clip_Coords_of_point_UL(1, sizey - 1), helper.TX_Coords_of_point_Center(1, sizey - 1));
@@ -139,7 +133,7 @@ namespace GELib
 
 
 
-            //Prepare the buffer containing the quad per spring that will be drawn depending on the position of the spring's ends
+            //Prepare the buffer containing the quad that will be drawn to depict a spring
             
             int counter = 0;
             
@@ -166,7 +160,7 @@ namespace GELib
             
 
 
-            //prepare the index buffer assigning consecutive 4-uples of vertices to 2 triangles
+            //Prepare an index buffer assigning consecutive 4-uples of vertices to 2 triangles
             uint[] indices = new uint[4 * number_of_inner_grid_points * 6];
 
             for (int i = 0; i < 4 * number_of_inner_grid_points; i++)
@@ -249,7 +243,7 @@ namespace GELib
         /// </summary>
         private void Create_Surfaces()
         {
-            //Initalize the positions and velocities of the point masses
+            //Initialize the positions and velocities of the point masses
             Vector4[] initial_Positions = new Vector4[sizex * sizey];
             Vector4[] initial_Velocities = new Vector4[sizex * sizey];
             for (int i = 0; i < sizex * sizey; i++)
@@ -280,9 +274,9 @@ namespace GELib
 
             //Most of the surfaces use the vector4 format, though it would probably also work using just vector2
             //The gpu can't additively blend using IEEE floats 
-            //so certain buffers that need to be written to additive blending for the effect to work,
+            //so certain buffers that need to be written in additive blending for the effect to work,
             //namely those gathering forces geometrically and per index,
-            //they use a surface suitable for hdr rendering that XNA provides
+            //they instead use a surface suitable for hdr rendering that XNA provides
             //which seems accurate enough, and supports additive blending
             Initial_Position = new RenderTarget2D(device, sizex, sizey, false, SurfaceFormat.Vector4, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
             Position0 = new RenderTarget2D(device, sizex, sizey, false, SurfaceFormat.Vector4, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
@@ -291,7 +285,6 @@ namespace GELib
             Velocity1 = new RenderTarget2D(device, sizex, sizey, false, SurfaceFormat.Vector4, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
             Force_By_Index = new RenderTarget2D(device, sizex, sizey, false, SurfaceFormat.HdrBlendable, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
             Force_By_Position_Accumulator = new RenderTarget2D(device, sizex, sizey, false, SurfaceFormat.HdrBlendable, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
-            Draw_Lines_Here = new RenderTarget2D(device, 12 * 64, 6 * 64, false, format_choice, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
             
             
             
@@ -306,11 +299,12 @@ namespace GELib
         #region util
 
         /// <summary>
-        /// Sets the effects to use the right surfaces for the current spring simulation call. Hadndles
-        /// the read/write buffer switches in other words. 
+        /// Sets the effects so as to use the right surfaces for the current spring simulation step. 
+		/// In other words it handles the read/write buffer switches 
+        /// 
         /// </summary>
-        /// <param name="Position_n"> Returns the Surface to write the new positions</param>
-        /// <param name="Velocity_n"> Returns the Surface to write the new velocities</param>
+        /// <param name="Position_n"> Returns the Surface in which to write the new positions</param>
+        /// <param name="Velocity_n"> Returns the Surface in which to write the new velocities</param>
         /// <param name="i"> Which of the simulation frame sub steps are we in</param>
         private void Set_Surfaces(out RenderTarget2D Position_n, out RenderTarget2D Velocity_n, int i)
         {
@@ -334,8 +328,7 @@ namespace GELib
 
 
         /// <summary>
-        /// It does what its long name says, it supposedely refactors the pattern of use
-        /// of the surfaces of the spring effect, I will probably replace it with something more general
+        /// It does what its long name says, it supposedly refactors the pattern of use of the surfaces of the spring effect, I will probably replace it with something more general
         /// </summary>
         /// <param name="renderTarget">Switch to this surface</param>
 
@@ -390,23 +383,27 @@ namespace GELib
         
         public void Pre_Draw()
         {
+		    // This call gets the generic instancing code to produce all the instances using the currently inserted handles
             this.force_placement_manager.Instances.Put_Instances_to_Buffers(this.force_placement_manager.Forces);
             
             
-            //the set surfaces helper function will put the current simulations steps to be updated position & velocity buffers here
+            //The set surfaces helper function will put the current simulation step's to be updated position & velocity buffers here
             RenderTarget2D Position_n;
             RenderTarget2D Velocity_n;
 
-            // repeat for all the simulation steps of this frame
+            // Repeat for all the simulation steps of this frame
             for (int i = 0; i < steps_per_frame; i++)
             {
 
-                //first we'll draw everything the force_placement_manager has gathered to this surface (and the manager will use instancing)
-                //this is set on the device before calling the next helper function cause XNA throws a message when attempting
+                //First we'll draw everything the force_placement_manager has gathered to this surface (and the manager will use instancing)
+                
+				
+				
+				//This surface is set on the device before calling the next helper function cause XNA throws a message when attempting
                 //to set a surface to a texture when it is used as a "frame buffer" (the current render target)
                 device.SetRenderTarget(this.Force_By_Position_Accumulator);
                 
-                //find out which surface will get the new position and velocitys vs containing the previous step's
+                //Find out which surface will get the new position and velocities vs containing the previous step's
                 Set_Surfaces(out Position_n, out Velocity_n, i);
 
                 
@@ -417,37 +414,40 @@ namespace GELib
                 
                
                 
-                //ask the manager of the placing of forces to draw them all
+                //Ask the manager of the force placement to draw them all
                 // the argument tells the manager whether he should clear the dynamic array of "force handles" (what produces the instances)
-                // it has gathered by the game placing forces on the grid
-                //it should only be cleared during the last step of the simulation in this frame
-                //this call internally sets buffers etc. we only clear the buffer externally 
+                // it has gathered by the game code placing forces on the grid.
+                
+				//It should only be cleared during the last sub frame step of the simulation in this frame
+                
+				//This call internally sets buffers etc. we only clear the buffer externally 
                 force_placement_manager.Draw_All_The_Forces( i == steps_per_frame - 1);
 
 
                 device.Indices = index_buffer;
-                //we set the vertexbuffer to the one containing the full screen quad sending the "tx coord identifier" of the mass point
-                //to a corresponding texel
-                // it will get used for all the draw calls that do the simulation
-                //until the call that actually draws quads for every spring
+                
+				//Set the vertexbuffer to the one containing the full screen quad sending the "tx coord identifier" of the mass point
+                //to a corresponding texel.
+                //It will get used for all the draw calls that perform the simulation,
+                //until the final call that actually draws quads for every spring
                 device.SetVertexBuffer(full_screen_with_index_info_buffer);
                
 
                 
                
 
-                //since the current vertex buffer is the full screen quad
-                //this will run the effect that gathers the forces from their geographical placing
-                //to the indexes of the mass points whose current position is located under the force quads
+                
+                //This will run the effect that gathers the forces from their geometrical areas
+                //to the indexes of the mass points whose current position is in that area
                 Draw_With_The_Current_Vertex_and_Index_Buffer_And_The_Provided_Surface_And_Effect(this.Force_By_Index,
                                   this.Gather_Forces_to_indices, BlendState.Opaque, true
                                   );
 
-                //this runs the shaders that calculate the hooke forces between the displaced mass points
+                //This runs the shaders that calculate the hooke forces between the displaced mass points
                 //the effect already has the textures etc. it uses set during its initialization
                 //and possibly changed if needed in the set_surfaces helper function
                 //the blending mode is set to additive (on an HDRBlendable surface)
-                //so that the hooke forces don't overwrite the previously spatially placed then gathered by mass point forces
+                //so that the hooke forces don't overwrite the forces put on the point mass in the previous call
                 Draw_With_The_Current_Vertex_and_Index_Buffer_And_The_Provided_Surface_And_Effect(this.Force_By_Index,
                                    Hooke_Force_effect, BlendState.Additive
                                    );
@@ -455,13 +455,13 @@ namespace GELib
 
 
 
-                // velocities get updated (the correct surfaces for the effect where set in the set surfaces helper)
+                // Velocities get updated (the correct surfaces for the effect where set in the set surfaces helper)
                 Draw_With_The_Current_Vertex_and_Index_Buffer_And_The_Provided_Surface_And_Effect(Velocity_n,
                                   Update_Velocity_effect, BlendState.Opaque
                                   );
 
                 
-                //positions get updated (the correct surfaces for the effect where set in the set surfaces helper)
+                // Positions get updated (the correct surfaces for the effect where set in the set surfaces helper)
                 Draw_With_The_Current_Vertex_and_Index_Buffer_And_The_Provided_Surface_And_Effect(Position_n,
                                  Update_Position_effect, BlendState.Opaque
                                  );
@@ -471,32 +471,26 @@ namespace GELib
 
 
             // The simulation finished, now a quad gets drawn for each spring in the array
-            //the buffer that will get used knows for each vertex (4 per quad off course)
-            // the "start mass point" and "end mass point" of the string, which are obviously neighbours on the grid
-            // the shader will read their positions and adjust the quad so that it will be drawn on screen as a line connecting
+            //the buffer that will be used knows for each of the spring-quads vertice
+            //the "start mass point" and "end mass point" of the string, which are obviously neighbours on the grid.
+            //The shader will read their positions and adjust the quad so that it will be drawn on screen as a line connecting
             //the two mass points
             device.SetVertexBuffer(this.draw_lines_buffer);
             device.SetRenderTarget(Post_Procces_Manager.bloom.sceneRenderTarget);
-            //device.SetRenderTarget(Draw_Lines_Here);
             Draw_the_Grid_effect.Parameters["ViewProjection"].SetValue(Camera.ActiveCamera.View * Camera.ActiveCamera.Projection);
             device.BlendState = BlendState.Additive;
             device.Clear(Color.Black);
 
 
-            //the foreach loop is xna lingo
-            //the call draws 2 triangles per quad per connection
-            //actually so as to not complicate the debugging process it currently draws each connection twice
-            //as in draws each ordered vs unordered pair
-            //this doesn't change the outcome much and when I settle down to how the parameters and the
-            //models containing the placed forces will be I will just change it to be correct (and faster)
+            //This kind of foreach loop is an xna thing.
+            
+			//The call draws 2 triangles per quad per connection(string)
+            
             foreach (EffectPass pass in this.Draw_the_Grid_effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
               
-                //device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0,
-                //                                 0, (number_of_inner_grid_points) * 4 * 4,
-                //                                 0, (number_of_inner_grid_points) * 2 * 4);
-
+            
                 device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0,
                                                  0, (sizex - 1) * (sizey - 1) * 2 * 4,
                                                  0, (sizex - 1) * (sizey - 1) * 2 * 2);
@@ -506,12 +500,6 @@ namespace GELib
 
 
 
-            ////
-            ////   DRAW THE ACCUMULATOR TO THE SURFACE USED FOR THE BLOOM FILTER
-            ////
-            //device.SetRenderTarget(Post_Procces_Manager.bloom.sceneRenderTarget);
-            //device.Clear(Color.Black);
-            //Help.Graphics.Draw_Quads.Draw_Sprite_In_World_Coords(Draw_Lines_Here, new Vector3(0, 0, -10), new Vector2(50f, 50));
             return;
 
 

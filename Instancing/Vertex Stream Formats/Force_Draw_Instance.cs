@@ -27,7 +27,7 @@ namespace GELib.Graphics.Generic_Instancing.Force
         public Vector2 Direction;
         
         /// <summary>
-        /// Normalized Coordinates size of the quad (later generally a mesh) that will get drawn 
+        /// Normalized Coordinates size of the quad (later generally a mesh) that will be drawn 
         /// </summary>
         public float Halfaxis;
 

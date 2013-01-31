@@ -13,8 +13,9 @@ using Microsoft.Xna.Framework.Media;
 namespace GELib
 {
     /// <summary>
-    /// Represents just a full screen quad that will send texture coordinates to pixel shaders via interpolation.
-    /// There the coordinates will, in the hlsl pixel shader code, represent a mass point via a 1-1 bijection
+    /// Represents the vertices of just a full screen quad that will send texture coordinates to pixel shaders via interpolation.
+    /// There the coordinates will, in the hlsl pixel shader code, represent a mass point via a  1-1 bijection
+	// (hopefully unless something is too unstable with how the hardware does the POINT sample texture addressing)
     /// 
     /// </summary>
     public struct Spring_Processing_Vertex_Format
@@ -28,23 +29,29 @@ namespace GELib
         /// and the pixel shader can use that index to perform spring force calculation, and velocity/position integration for that
         /// particular point mass.
         /// 
+		
+		
+		/// (
         /// This vertex format is also used in gathering forces drawn as quads in geometrical parts of the grid
         /// (parts of the grid as in geometrically, that is the drawn force is put in some geometrical location 
-        /// and is supposed to act to any mass point currently placed under it).
+        /// and is supposed to act to any mass point currently placed within it).
         /// 
-        /// All the quads representing forces are drawn to an 'accumulator' render surface by gemetrical location.
-        /// Then a vertex shader interpolates the tx coords of a full screen quad
-        /// to each pixel acting like point mass, and a pixel shader reads the current position of the mass point as well
-        /// as the forces that have been additively blended to the "geometrical" accumulator render surface. 
-        /// Then adds the placed forces to the point mass's hooke forces
-        /// And places everything yo a render buffer that eventually gets used for velocity integration 
-        /// 
+        /// - All the quads representing forces are drawn to an 'accumulator' render surface using their geometrical location.
+        /// - Then the pixel shaders receive the interpolated tx coords of the full screen quad,
+        /// - each pixel/fragment getting the "adress" of a single point mass, 
+		//  - the pixel shader reads the current position of the point mass 
+        /// - the pixel shader also reads forces that have been additively blended to the "geometrical" accumulator render surface, 
+        /// - then outputs these gathered forces
+        /// - so that subsequent hlsl effects will add the hooke law forces and then perform the integration
+		///  See the Spring_Force_Gather hlsl effect
+        /// )
+		
         /// </summary>
         public Vector3 full_screen_quad_vertices_normalized;
 
         /// <summary>
         /// The TX coordinates of the vertices of a full screen quad. When interpolated they represent a point mass to a pixel shader
-        /// working on it specifically
+        /// 
         /// </summary>
         public Vector2 text_corner;
 

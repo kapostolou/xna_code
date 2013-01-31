@@ -13,7 +13,7 @@ struct VS_In{
 float2 current_point_mass_texel_coords:TEXCOORD1;
 float2 other_point_mass_texel_coords:TEXCOORD2;
 
-//which corner of the spring's quad the vertexshader is processing
+//Which corner of the spring's quad the vertexshader is processing
 float2 quad_vertex_indicator: TEXCOORD0;
 
 
@@ -52,6 +52,8 @@ VS_Out
 	side_normal*=obb_width;
     VS_Out Output = (VS_Out)0;		
 	Output.length=length_;
+	
+	//The if statement's clause checks if the currently processed vertex is the tl, br, bl, or tr vertex of the quad
 	if( input.quad_vertex_indicator.y>=0.5f)
 	{
 	Output.Position.xy=other_ended_up.xy;
@@ -82,7 +84,7 @@ VS_Out
 float4 Draw_Spring_Grid_PS (VS_Out input) : COLOR0
 {
 	
-	// this makes big lines slightly more bright
+	// This makes big lines slightly more bright
 	// it's not of much use but I will refactor it to be another parametrization parameter
 
 	float coeff=saturate(input.length  /  (20*1/128.0f));

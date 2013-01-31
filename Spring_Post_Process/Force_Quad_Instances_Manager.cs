@@ -15,8 +15,8 @@ namespace GELib.Graphics.Generic_Instancing.Force
 {
     /// <summary>
     /// Specializes the template for instancing, with the handle  and instance struct types used specifically for drawing the spring
-	/// USes inheritance to create an alias for the template instantation
-    /// </summary>
+	/// Uses inheritance to create an alias for the template instantiation
+	/// </summary>
     public class Force_Quad_Instances_Manager : Instances_Manager_Generic<Force_Draw_Handle, Force_Draw_Instance>
     {
         public Force_Quad_Instances_Manager(GraphicsDevice graphics_device, Instancing_Slots_Info info)

@@ -13,10 +13,11 @@ const float half_step=1/(2*128.0f);
 
 
 
-//This texture doesn't get updated, it containts the initial positions of each point mass, so that some force sending it directly back there can be added
+//This texture doesn't get updated, it contains the initial positions of each point mass, so that some force sending it directly back there can be added
 //its contents could also be directly calculated by the shader without accessing texture memory
 Texture2D<float4> Initial_Position;
 sampler initial_positions = sampler_state { texture = <Initial_Position>; magfilter = POINT; minfilter = POINT; mipfilter=NONE; AddressU = clamp; AddressV = clamp;};
+
 
 //Where the point masses were located in the previous simulation step
 //each texel corresponds to one point mass, a full screen quad gets drawn with coordinates that sent 1 point mass to each pixel shader
@@ -60,7 +61,7 @@ VS_Out VS(VS_In input)
 float4 CalculateForces(float2 point_mass_texel_coord : TEXCOORD0) : COLOR0
 {
  
-    //we will use the tx coord "index" as supplied to the pixel shader via interpolation
+    //We will use the tx coord "index" as supplied to the pixel shader via interpolation
 	//to find the neighbouring point masses, the step is the difference in tx coords between each neigbouring texel (and via a bijection each point mass)
 	float2 mass_point_texel_coord= point_mass_texel_coord;
 	float2 up_mass_point_texel_coord= point_mass_texel_coord+ float2(0,-step);
@@ -120,7 +121,7 @@ float4 CalculateForces(float2 point_mass_texel_coord : TEXCOORD0) : COLOR0
 	
 	force.zw=float2(0,1);
 	
-	//the force gets written on the Vector4 texels of the render surface
+	//The force gets written on the Vector4 texels of the render surface
 	//this can be optimized to use Vector2 texels 
     return force;
 	

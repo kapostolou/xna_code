@@ -15,16 +15,17 @@ namespace GELib
    /// <summary>
    /// This class is used to place forces on the spring grid being simulated on the GPU
    /// The forces are placed using sprites drawn with hardware instancing
-   /// The gameplay code and the Post_Process object guding the effect use an object of this class (the game code via a static singleton)
-   /// It is supposed to get constructed by the Spring Effect Post Process object
+   /// The gameplay code and the Post_Process object guiding the effect use an object of this class (the game code via a static singleton)
    /// </summary>
     public class Spring_Grid_Force_Placement_Manager
     {
         public static bool flip = false;
+		
+		
         //Used as an entry point by game code
         public static Spring_Grid_Force_Placement_Manager Singleton;
 
-        #region public interface
+      
         
         /// <summary>
         /// Manages the GPU instancing of the sprites that contain
@@ -40,7 +41,8 @@ namespace GELib
         /// and using a RemoveAll(predicate) function
         /// </summary>
         public List<Force_Draw_Handle> Forces;
-        #endregion
+       
+	   
 
         #region needed for drawing
         
@@ -52,7 +54,7 @@ namespace GELib
         /// works per "index in the grid" rather than by geometrical position.
         /// 
         /// That is this surface contains forces placed geometrically and an effect gathers them to point masses being located near.
-        /// A second shader uses the forces gathered to a point mass
+        /// A second shader takes the forces gathered to a point mass
         /// and adds hooke forces. 
         /// </summary>
         private RenderTarget2D Force_By_Position_Accumulator;
@@ -78,7 +80,7 @@ namespace GELib
 
         /// Gets called by the post process effect object whenever the
         /// acquired force-sprites should get drawn
-        /// Since the whole effect gets drawn 4 times per frame to make the simulation more stable,
+        /// Since the whole effect gets drawn more than one times per frame to make the simulation more stable,
         /// the end of the current frame (when the current sprite-force-handler data are not anymore needed)
         /// has to be specified by the caller in the clear_forces argument.
         public void Draw_All_The_Forces(bool clear_forces)
@@ -90,8 +92,7 @@ namespace GELib
             
             
             //The rendertarget is an hdrblendable which means it can additively blend the
-            //floating point  data of the forces, 
-            //except with some loss of precision
+            //floating point  data of the forces, except with some loss of precision
             CM.game1.GraphicsDevice.RasterizerState = RasterizerState.CullNone;
             CM.game1.GraphicsDevice.BlendState = BlendState.Additive;
             CM.game1.GraphicsDevice.SetRenderTarget(Force_By_Position_Accumulator);
@@ -118,6 +119,11 @@ namespace GELib
                     Forces[i].Return();
 
                 }
+				
+				//I didn't use RemoveAll here cause all the force handles are inserted every frame, and only last one frame
+				//If they were to be updated it till one or more predicates become false, then a kill flag would be set and
+				//the Remove All function on the List (C#'s resizable array, a C++ vector) would delete them.
+				//Hopefully a single RemoveAll is much faster than many RemoveAt calls on a List containing a few thousand objects
                 Forces.Clear();
             }
 
@@ -132,23 +138,25 @@ namespace GELib
         
         /// <summary>
         ///  Adds handles that contain info for generating force sprite instances
-        /// The information that the handle uses could potentialy be modified to contain a "model id" specifing what mesh gets drawn with instances (so far I'm only using quads).
-        /// This would be a "slot" of the generic instancing template as described in its source file.
-        /// </summary>
-        /// <param name="Position"> where to draw, since the effect runs on normalized coordinates this gets scaled by 50 then clamped</param>
-        /// <param name="Direction"> supposed to indicate what direction the object placing the force on the grid was moving</param>
-        /// <param name="Halfaxis"> size of the square quad</param>
+        /// The information that the handle uses could potentially be modified to contain a "model id" specifying what mesh gets drawn with instances (so far I'm only using quads).
+        /// This would be a "slot" of the generic instancing template as described in its source file. (currently there is only one slot)
+		/// This encapsulates the ellipse of the diagram describing the collaboration of the classes used in the effect.
+		
+		/// </summary>
+        /// <param name="Position"> Where to draw, since the effect runs on normalized coordinates this gets scaled by 50 then clamped</param>
+        /// <param name="Direction"> Supposed to indicate what direction the object placing the force on the grid was moving</param>
+        /// <param name="Halfaxis"> Size of the square quad</param>
         /// <param name="strength"> How strong the force should be</param>
         public void Add_Force(Vector2 Position, Vector2 Direction, float Halfaxis, float strength)
         {
 
-            //The handle gets taken from a pool (a free list) of recycled objects, RATHER than allocated using the new operator
+            //The handle gets taken from a pool (a free list) of recycled objects, rather than allocated using the new operator
             var handle = GELib.Storing.Object_Pools.Force_Handlers.Get();
 
-            //normally a constructor would be used but the object has already been allocated during the initialization
+            //Normally a constructor would be used but the object has already been allocated during the initialization
             handle.Set_Force_Handle(Position, Halfaxis, strength, Direction);
             
-            //The Forces list of handles is later taken by the Generic Instancing template and used to produce instances
+            //The Forces list of handles is later call-back'd by the Generic Instancing template and used to produce instances
             Forces.Add(handle);
         }
 

@@ -24,7 +24,7 @@ namespace GELib
     /// (this isn't used here but should be used with the RemoveAll on a dynamic array of Storables)
     /// and a function that does the Suspending (cleaning up the old state).
     /// The name of the Suspend function implies that it is supposed to be called as the objects get RemoveAll'd in a batch
-    /// (I guess this would help with the cache usage instead of them being "revived" 1 by 1 in the actual game code)
+    /// (I guess this could help with the cache usage instead of them being "revived" 1 by 1 in the actual game code)
     /// 
     /// The game generally relies on dynamic arrays with no RemoveAt calls (which would produce too much copying)
     /// but a final RemoveAll, and so far using the dynamic arrays versus some other type of data structure (such as a linked
@@ -33,8 +33,8 @@ namespace GELib
     /// Each Storable object also has a member with the stack it was taken from so that the client game code won't have to know
     /// where to return it.
     /// 
-    /// Objects are in the arrays are  initialized mode with their parameter less constructor
-	/// When suspended they are supposed to release resources ai requests etc. and get back to their initialized state
+    /// Objects in the arrays are initialized with their type's parameterless constructor
+	/// When suspended they are supposed to release resources AI requests etc. and get back to their initialized state
     /// 
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -70,7 +70,7 @@ namespace GELib
         
         
         /// <summary>
-        /// Returns the first ( supposed to be suspended) object from the stack
+        /// Returns the first (supposed to have been suspended to the initialized mode) object from the stack
         /// </summary>
         /// <returns></returns>
         public T Get()

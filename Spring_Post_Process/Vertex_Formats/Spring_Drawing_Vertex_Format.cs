@@ -22,24 +22,23 @@ namespace GELib
         public Vector3 normalized_position;
         
         /// <summary>
-        /// Indicates which corner of the drawn quad this vertex represents (tl, tr, bl etc.)
+        /// Indicates which corner of the drawn quad this vertex represents (tl, tr, bl etc.). This is actually not needed (you could use the normalized_position too)
         /// </summary>
         public Vector2 corner;
         
         /// <summary>
         /// The index (texture coordinate, texel) of the the first in the pair of spring array elements forming the drawn quad,
-        /// this is also used in the Vertex Shader (Spring_Draw_Grid) to transform the normalized_position. Each texel in the surface where
-        /// the full screen quad with the Spring_Drawing_vertex_Format is drawn is supposed to correspond 1-1 to a point mass
+        /// This is also used in the Vertex Shader (Spring_Draw_Grid) to transform the normalized_position, and thus position the spring's obb
         /// </summary>
         public Vector2 point_mass_index;
         
         /// <summary>
-        /// the index (texture coordinate) of the the second in the pair of spring array elements forming the drawn quad
+        /// The index (texture coordinate) of the the second in the pair of spring array elements forming the drawn quad
         /// </summary>
         public Vector2 point_mass_index_2;
 
 
-        //the last two correspond to a spring from the array getting drawn
+        //The last two correspond to/specify a spring from the grid
 
       
 
@@ -49,7 +48,6 @@ namespace GELib
             this.normalized_position = position_screen_corner_in_normalized;
             this.corner = text_corner;
             this.point_mass_index = mass_index;
-            
             this.point_mass_index_2 = mass_index_2;
         }
 

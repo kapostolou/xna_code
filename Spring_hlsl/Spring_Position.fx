@@ -5,7 +5,7 @@
 
 
 
-// a simple euler method integration step
+// A simple euler method integration step
 
 
 Texture2D<float4> Velocity;
@@ -15,7 +15,7 @@ Texture2D<float4> Old_Position;
 sampler positions= sampler_state { texture = <Old_Position>; magfilter = POINT; minfilter = POINT; mipfilter=NONE; AddressU = clamp; AddressV = clamp;};
 
 
-// as decribed in the Spring_Gather_Forces.fx file the point_mass_texel_coord is a txcoord xorresponding to a point mass in the grid
+//As decribed in the Spring_Gather_Forces.fx file the point_mass_texel_coord is a txcoord corresponding to a point mass in the grid
 struct VS_In{
 float4 full_screen_quad_coordinates:POSITION ;
 float2 point_mass_texel_coord: TEXCOORD0;
@@ -31,7 +31,7 @@ float2 point_mass_texel_coord: TEXCOORD0;
 
 
 
- VS_Out VS(VS_In input) 
+VS_Out VS(VS_In input) 
 {
     VS_Out Output = (VS_Out)0;		
 	Output.full_screen_quad_coordinates.xyz=input.full_screen_quad_coordinates.xyz;
@@ -65,7 +65,7 @@ technique Position_Tech
 {
     pass Pass1
     {
-	VertexShader =  compile vs_3_0 VS();
-    PixelShader = compile ps_3_0 UpdatePositions();
+		VertexShader =  compile vs_3_0 VS();
+		PixelShader = compile ps_3_0 UpdatePositions();
     }
 }

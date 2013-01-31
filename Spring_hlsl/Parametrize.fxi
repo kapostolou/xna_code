@@ -1,5 +1,5 @@
 // Vary these to change the effect's outcome
-// Grouped here for fast access
+// Grouped here for faster access
 
 const float k=1200.0f;
 const float l=6.0f;
