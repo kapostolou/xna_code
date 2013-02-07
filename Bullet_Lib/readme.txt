@@ -1,0 +1,1 @@
+In the executable just press the next and right buttons until the counter gets to  10  or so
