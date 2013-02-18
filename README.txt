@@ -20,8 +20,3 @@ The Bullet_Lib folder contains undocumented F# source code that is supposed to b
 
 The Polygon_Test folder contains a VS 2010 XNA project for a "tool" that allows you to draw a counterclockwise polygon, and then subdivides it in a data structure for facilitating a log(number_of_vertices) query on the polygon's most extreme vertices in a given direction. This will later be used in implementing the GJK algorithm for checking polygon interesction (currently I only use obbs spheres and planes).
 
-(
-Instructions: Draw a simple convex polygon by clicking the mouse, close it by clicking at the beginning, then press the left trigger to choose a direction and the A and Y buttons to rotate the polygon
-TODO: Check convexivity/decompose to convex parts, run the GJK on 2 polygons 
-moved by the triggers, get this to use a mesh output by Blender3D or other modelling programs
-)
